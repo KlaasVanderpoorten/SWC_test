@@ -81,3 +81,15 @@ meanph <- df %>%
 physicodiversity <- dplyr::full_join(physicochem,diversity,by = "sample_title")
 physicodiversity
 
+#### combining dplyr and ggplot2 ####
+
+p1 <- ggplot(data = df, aes(x = Timepoint,y = Cell.density..cells.mL., fill = Cell.density..cells.mL.)) +
+  geom_point(shape = 21, size = 4)
+
+df.2 <- df %>% filter(Reactor.cycle==2)
+
+p2 <- df %>% filter(Reactor.cycle==2) %>% 
+  ggplot(aes(x = Timepoint,y = Cell.density..cells.mL., fill = Cell.density..cells.mL.)) +geom_point(shape = 21, size = 4)
+
+p2 + scale_y_log10()
+  
