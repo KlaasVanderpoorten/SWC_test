@@ -5,6 +5,11 @@ library(dplyr)
 #### load data ####
 df <- read.csv("Metadata.csv",nrows=77)
 
+#of na.exclude(df) verwijderd elke rij met een NA 
+# rowSums(if.na(df)) == ncol(df)
+#na.omit() rijen die NA bevatten, worden weggefilterd maar regressiefunctie weet nog dat je die gefilterd hebt
+# blank.lines.skip = TRUE als argument bij read.csv .. werkt soms, hangt er van af (stringsAsFactors...)
+
 # the function of the last loaded library is used: eg. function filter from dplyr is used
 # and not from stats
 # if you want to use the original functions: two times :: ,eg. stats::filter
@@ -49,5 +54,30 @@ meanph <- df %>%
 df$Reactor.cycle <- as.factor(df$Reactor.cycle)
 d2 <- df %>% 
   filter(Reactor.cycle == "2") %>% 
+  mutate(condratio = Conductivity/temp) %>% 
   summarise(sd.d2 = sd(Diversity...D2),
-            avelog10.celldens = mean(log10(Cell.density..cells.mL.)))
+            avelog10.celldens = mean(log10(Cell.density..cells.mL.)),
+            mean.condrat = mean(condratio))
+
+df$Reactor.cycle <- as.integer(df$Reactor.cycle)
+
+#### join data sets ####
+physicochem <- df %>%  
+  select(sample_title,temp,ph,Conductivity)
+diversity <- df %>% 
+  select(sample_title,contains("Diversity"))
+
+meanph <- df %>%
+  filter(Reactor.cycle == 2) %>% 
+  group_by(Reactor.phase) %>%
+  mutate(condratio=Conductivity/temp) %>% 
+  summarise(mean.ph = mean(ph),
+            mean.d2 = mean(Diversity...D2),
+            sd.ph = sd(ph),
+            sd.d2 = sd(Diversity...D2),
+            avelog10.celldens = mean(log10(Cell.density..cells.mL.)),
+            mean.condrat = mean(condratio))
+
+physicodiversity <- dplyr::full_join(physicochem,diversity,by = "sample_title")
+physicodiversity
+
