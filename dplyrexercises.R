@@ -36,3 +36,18 @@ diversity <- df %>%
 diversity2 <- df %>%
   filter(Reactor.phase == "Startup") %>% 
   select(contains("Diversity"))
+
+#### grouping by ####
+meanph <- df %>% 
+  group_by(Reactor.phase) %>% 
+  summarise(mean.ph = mean(ph),
+            mean.d2 = mean(Diversity...D2),
+            sd.ph = sd(ph))
+#challenge
+#generate a summary for reactor cycle 2 and add standard deviation and 
+#log10 transformed cell count
+df$Reactor.cycle <- as.factor(df$Reactor.cycle)
+d2 <- df %>% 
+  filter(Reactor.cycle == "2") %>% 
+  summarise(sd.d2 = sd(Diversity...D2),
+            avelog10.celldens = mean(log10(Cell.density..cells.mL.)))
