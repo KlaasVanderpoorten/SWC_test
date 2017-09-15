@@ -44,5 +44,8 @@ p4 + geom_line(aes(color = Reactor.phase))
 
 #Challenge time
 ### Right side: Conductivity
-
-
+plot1 <- ggplot(data = df, aes(x = Timepoint, y = Conductivity, fill = Reactor.phase))+
+ geom_point(shape = 21, size = 4, alpha = 0.5)
+plot1 <- plot1 + facet_grid(~Reactor.cycle)
+plot1 + geom_line(aes(color = Reactor.phase)) 
+plot1
